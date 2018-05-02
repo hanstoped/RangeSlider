@@ -61,7 +61,7 @@ class RangeSliderThumbLayer: CALayer {
             return
         }
         
-        let thumbFrame = bounds.insetBy(dx: 2.0, dy: 2.0)
+        let thumbFrame = bounds.insetBy(dx: lineWidth, dy: lineWidth)
         let cornerRadius = thumbFrame.height * slider.curvaceousness / 2.0
         let thumbPath = UIBezierPath(roundedRect: thumbFrame, cornerRadius: cornerRadius)
         
@@ -182,8 +182,10 @@ public class RangeSlider: UIControl {
     fileprivate let upperThumbLayer = RangeSliderThumbLayer()
     
     fileprivate var thumbWidth: CGFloat {
-        return CGFloat(bounds.height)
+        return CGFloat(bounds.height) - 3.0
     }
+    
+    @IBInspectable public var trackHeight: CGFloat = 5.0
     
     override public var frame: CGRect {
         didSet {
@@ -215,10 +217,22 @@ public class RangeSlider: UIControl {
         
         lowerThumbLayer.rangeSlider = self
         lowerThumbLayer.contentsScale = UIScreen.main.scale
+        
+        lowerThumbLayer.cornerRadius = thumbWidth / 2.0
+        lowerThumbLayer.shadowColor = UIColor.black.cgColor
+        lowerThumbLayer.shadowOffset = CGSize(width: 0, height: 1)
+        lowerThumbLayer.shadowOpacity = 0.5
+        lowerThumbLayer.shadowRadius = 3
         layer.addSublayer(lowerThumbLayer)
         
         upperThumbLayer.rangeSlider = self
         upperThumbLayer.contentsScale = UIScreen.main.scale
+        
+        upperThumbLayer.cornerRadius = thumbWidth / 2.0
+        upperThumbLayer.shadowColor = UIColor.black.cgColor
+        upperThumbLayer.shadowOffset = CGSize(width: 0, height: 1)
+        upperThumbLayer.shadowOpacity = 0.5
+        upperThumbLayer.shadowRadius = 3
         layer.addSublayer(upperThumbLayer)
     }
     
@@ -226,7 +240,7 @@ public class RangeSlider: UIControl {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         
-        trackLayer.frame = bounds.insetBy(dx: 0.0, dy: bounds.height/3)
+        trackLayer.frame = CGRect(x: bounds.origin.x, y: bounds.midY - trackHeight/2.0, width: bounds.size.width, height: trackHeight)
         trackLayer.setNeedsDisplay()
         
         let lowerThumbCenter = CGFloat(positionForValue(lowerValue))
